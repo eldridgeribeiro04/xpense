@@ -1,0 +1,36 @@
+<h2>Balance: £{{ balance|default:"0.00" }}</h2>  <!-- Show balance or default -->
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="product" placeholder='Product name' required>
+    <input type="number" name="product_count" placeholder='Quantity' required>
+    <input type="number" step="0.01" name="product_cost" placeholder='Cost' required>
+    <button type="submit">Add purchase</button>
+</form>
+
+--------------------
+<h3>All items</h3>
+
+<table>
+<tr>
+    <th>Name</th>
+    <th>No. of items</th>
+    <th>Price per item</th>
+    <th>Total cost</th>
+</tr>
+
+{% for i in tracker %}
+<tr>
+    <td>{{ i.product }}</td>
+    <td>{{ i.product_count}}</td>
+    <td>£{{ i.product_cost }}</td>
+    <td>£{{ i.total_cost }}</td>
+{% endfor %}
+</table>
+
+<br>
+
+<button type='submit'><a href={% url 'add_money' %}>Add money</a></button>
