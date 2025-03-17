@@ -27,8 +27,8 @@ class ExpenseTracker(models.Model):
     product_count = models.PositiveIntegerField()
     product_cost = models.DecimalField(max_digits=10, decimal_places=2)
     
-    def total_cost(self):
-        return self.product_cost * self.product_count
+    # def total_cost(self):
+    #     return self.product_cost * self.product_count
         
     def money_after_purchase(self):
         total_cost = self.product_cost * self.product_count

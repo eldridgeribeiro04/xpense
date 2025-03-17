@@ -1,0 +1,9 @@
+<h1>Update {{ tracker.product }}
+
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="product" placeholder='Product name' required>
+    <input type="number" name="product_count" placeholder='Quantity' required>
+    <input type="number" step="0.01" name="product_cost" placeholder='Cost' required>
+    <button type="submit">Update purchase</button>
+</form>
