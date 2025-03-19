@@ -19,6 +19,10 @@ class Money(models.Model):
             return str(f"£{self.total_money} as on {self.date_added}")
         else:
             return f"Account balance as of {self.date_added} is zero"
+        
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse("tracker")
 
 
 class ExpenseTracker(models.Model):
@@ -26,9 +30,6 @@ class ExpenseTracker(models.Model):
     product = models.CharField(max_length=100)
     product_count = models.PositiveIntegerField()
     product_cost = models.DecimalField(max_digits=10, decimal_places=2)
-    
-    # def total_cost(self):
-    #     return self.product_cost * self.product_count
         
     def money_after_purchase(self):
         total_cost = self.product_cost * self.product_count

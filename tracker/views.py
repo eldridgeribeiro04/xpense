@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ValidationError
+from django.forms import formset_factory
 
 from .forms import *
 
@@ -10,7 +11,6 @@ from decimal import Decimal
 # Create your views here.
 
 def add_money_view(request):
-    
     money_instance = Money.objects.first()
     
     if request.method == 'POST':
@@ -28,7 +28,6 @@ def add_money_view(request):
 
 
 def tracker_view(request):
-    
     money_instance = Money.objects.first()
     
     if not money_instance:
@@ -48,7 +47,7 @@ def tracker_view(request):
             tracker.save()
         
     tracker_obj = ExpenseTracker.objects.all()
-    
+        
     for i in tracker_obj:
         i.total_cost = i.product_cost * i.product_count
     
@@ -60,32 +59,32 @@ def tracker_view(request):
 
 def update_product(request, pk):
     tracker = get_object_or_404(ExpenseTracker, pk=pk)
+    money_instance = Money.objects.first()
         
     if request.method == 'POST':
+        form = TrackerForm(request.POST, instance=tracker)
+        money_instance.total_money += (tracker.product_cost * tracker.product_count)
+        # money_instance.save()
         
-        tracker.wallet.total_money += tracker.product_cost * tracker.product_count
-        tracker.wallet.save()
-        
-        product = request.POST.get('product')
-        product_count = request.POST.get('product_count')
-        product_cost = request.POST.get('product_cost')
-        
-        try:
-            tracker.product=product
-            tracker.product_count= int(product_count)
-            tracker.product_cost= Decimal(product_cost)
-                 
-            tracker.money_after_purchase()   
-            tracker.save()
+        if form.is_valid():
+            updated_tracker = form.save(commit=False)
+            
+            total_cost = updated_tracker.product_cost * updated_tracker.product_count
+            if total_cost > money_instance.total_money:
+                return render(request, 'tracker/update.html', {'tracker': tracker, 'error': 'Insufficient funds!'})
+
+            money_instance.save()
+            
+            tracker.money_after_purchase()
+            updated_tracker.wallet = money_instance
+            updated_tracker.save()
             
             return redirect('tracker')
-                    
-        except ValidationError as e:
-            return render(request, 'tracker/update.html', {'error': str(e)})
-        except (TypeError, ValueError):
-            return render(request, 'tracker/update.html', {'error': 'Invalid input values'})
+    
+    else:
+        form = TrackerForm(instance=tracker)
         
-    return render(request, "tracker/update.html", {'tracker': tracker})
+    return render(request, "tracker/update.html", {'tracker': tracker, 'form': form})
 
 
 def delete_product(request, pk):

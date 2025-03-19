@@ -1,13 +1,46 @@
-<h1><a href={% url 'tracker' %}>Xpense tracker</a></h1>
+{% extends "tracker/main.html" %}
+
+{% block content %}
+
+{% comment %} <br> {% endcomment %}
+<div class="container" style="padding-top: 20px"> 
 
 <form method="POST">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Submit</button>
+
+    {% comment %} {{ form.as_p }} {% endcomment %}
+
+    <div class="mb-3">
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1">Product</span>
+          {{ form.product }}
+        </div>
+    </div>
+      
+    <div class="mb-3">
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1">Product count</span>
+          {{ form.product_count }}
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <div class="input-group">
+          <span class="input-group-text" id="basic-addon1">Product</span>
+          {{ form.product_cost }}
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 <hr>
-<h3>All items</h3>
+
+<p class="d-inline-flex gap-1">
+    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+    All items
+    </a>
+</p>
 
 <style>
     table, th, td {
@@ -15,8 +48,14 @@
   padding: 10px
 }
 
+    a {
+        color: white
+    }
+
 </style>
 
+<div class="collapse" id="collapseExample">
+    <div class="card card-body">  
 <table class="border-style" border=1 frame=hsides rules=rows>
 <tr>
     <th>Name</th>
@@ -31,18 +70,22 @@
     <td>{{ i.product_count}}</td>
     <td>£{{ i.product_cost }}</td>
     <td>£{{ i.total_cost }}</td>
-    <td><button type='submit'><a href={% url 'update' i.pk %}>Update</a></td>
-    <td><button type='submit'><a href={% url 'delete' i.pk %}>Delete</a></button>
+    <td><button type='submit' class="btn btn-warning"><a href={% url 'update' i.pk %}>Update</a></td>
+    <td><button type='submit' class="btn btn-danger"><a href={% url 'delete' i.pk %}>Delete</a></button>
 {% endfor %}
 </table>
 
-<br>
-<hr>
+</div>
+</div>
 
-<h2>Balance: £{{ balance |default:"0.00" }}</h2>
+<br>
+
+<h2></h2>
 
 {% if error %}
     <p style="color: red;">{{ error }}</p>
 {% endif %}
 
-<button type='submit'><a href={% url 'add_money' %}>Add money</a></button>
+{% endblock %}
+
+</div>

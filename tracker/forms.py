@@ -1,4 +1,6 @@
-from django.forms import ModelForm, ValidationError
+from django.forms import ModelForm, ValidationError, Textarea, DateField
+from django.utils.translation import gettext_lazy as _
+
 from .models import ExpenseTracker, Money
 
 class TrackerForm(ModelForm):
@@ -6,6 +8,9 @@ class TrackerForm(ModelForm):
     class Meta:
         model = ExpenseTracker
         fields = ["product", "product_count", "product_cost"]
+        labels = {
+            "product": _("Product name"),
+        }
         
     def clean_product_count(self):
         product_count = self.cleaned_data.get('product_count')
